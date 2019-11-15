@@ -168,7 +168,7 @@ int Bprintf(buf_t* buf, const char* format, args_t... args) {
 	}
 
 	char tempStr[stringMaxSize] = "";
-	int printLen = sprintf(tesmpStr, format, args...);
+	int printLen = sprintf(tempStr, format, args...);
 
 	if (printLen < 0) {
 		return printLen;
@@ -369,4 +369,37 @@ int Btell(buf_t* buf) {
 	assert(buf != NULL);
 
 	return buf->cursor;
+}
+
+
+/**
+*	Удаляет буфер. Если он был в режиме чтения, то память со строкой не освобождается!
+*
+*	@param[in] buf Буфер
+*
+*	@return 1 - некорректный буфер на входе; 0 - все прошло нормально
+*/
+
+int BufDestructor(buf_t* buf) {
+	assert(buf != NULL);
+
+	if (buf->mode == 'r') {
+		buf->str = NULL;
+		buf->cursor = 0;
+		buf->size = 0;
+		buf->mode = 0;
+		buf->lastChar = 0;
+	}
+	else if (buf->mode == 'w') {
+		free(buf->str);
+		buf->cursor = 0;
+		buf->size = 0;
+		buf->mode = 0;
+		buf->lastChar = 0;
+	}
+	else {
+		return 1;
+	}
+
+	return 0;
 }
