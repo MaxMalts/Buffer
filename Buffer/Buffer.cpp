@@ -2,25 +2,11 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
-
-#define EOB -1   //признак конца буфера
-#define ERR_BUF {NULL, 0, -1, 0}
-
-/**
-*	Буфер (строка с курсором)
-*/
-
-struct buf_t {
-	char* str = {};
-	int cursor = 0;
-	int size = 0;
-	char mode = 0;
-	int lastChar = 0;
-};
+#include "buffer.h"
 
 
 
-/**
+/*  Не для пользователя
 *	Пересчитывает последний символ исходя из текущего положения курсора
 *
 *	@param buf Буфер
@@ -46,7 +32,7 @@ void RecalcLastChar(buf_t* buf) {
 *	@return Созданный буфер (в случае ошибки равен ERR_BUF).
 */
 
-buf_t BufConstructor(const char mode, char* str, const int strSize, int* err = NULL) {
+buf_t BufConstructor(const char mode, char* str, const int strSize, int* err) {
 
 	if (mode != 'r') {
 		if (err != NULL) {
@@ -78,7 +64,7 @@ buf_t BufConstructor(const char mode, char* str, const int strSize, int* err = N
 *	@return Созданный буфер (в случае ошибки равен ERR_BUF).
 */
 
-buf_t BufConstructor(const char mode, int* err = NULL) {
+buf_t BufConstructor(const char mode, int* err) {
 
 	const int begSize = 10;
 

@@ -126,6 +126,9 @@
   <ItemGroup>
     <ClCompile Include="Buffer.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="buffer.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
