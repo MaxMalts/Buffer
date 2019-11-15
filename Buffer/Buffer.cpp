@@ -136,90 +136,10 @@ char Bgetc(buf_t* buf) {
 		return -2;
 	}
 
-	if (buf->cursor >= buf->size - 1) {
+	if (buf->cursor >= buf->size) {
 		return EOB;
 	}
-	return buf->str[buf->cursor];
-}
-
-
-/**
-*	Аналогичная scanf функция для буфера
-*
-*	@param[in] buf Буфер
-*	@param[in] format Строка фармата
-*	@param[in] args Аргументы
-*
-*	@return В случае успеха возвращает количество записанныз символов.\
- Если значение отрицательно, то произошли следующие ошибки:\
- -403 - буфер не в режиме записи; -401 - не удалось увеличить размер буфера\
- ост. - ошибка при записи, проверьте корректность входных параметров
-*/
-
-template<typename... args_t>
-int Bprintf(buf_t* buf, const char* format, args_t... args) {
-	assert(buf != NULL);
-	assert(format != NULL);
-
-	const int stringMaxSize = 100000;
-
-	if (buf->mode != 'w') {
-		return -403;
-	}
-
-	char tempStr[stringMaxSize] = "";
-	int printLen = sprintf(tempStr, format, args...);
-
-	if (printLen < 0) {
-		return printLen;
-	}
-
-	if (buf->cursor + printLen >= buf->size) {
-		if (realloc(buf->str, (buf->size + printLen) * 2) == NULL) {
-			return -401;
-		}
-		strncpy(&buf->str[buf->cursor], tempStr, printLen);
-	}
-
-	RecalcLastChar(buf);
-
-	return printLen;
-}
-
-
-/**
-*	Аналогичная scanf функция для буфера
-*
-*	@param[in] buf Буфер
-*	@param[in] format Строка фармата
-*	@param[in] args Аргументы
-*
-*	@return В случае успеха возвращает количество прочитанных параметров.\
- Если значение отрицательно, то произошли следующие ошибки:\
- -1 - буфер не в режиме чтения; -2 - ошибка при чтении,\
- проверьте корректность входных параметров
-*/
-
-template<typename... args_t>
-int Bscanf(buf_t* buf, const char* format, args_t... args) {
-	assert(buf != NULL);
-	assert(format != NULL);
-
-	if (buf->mode != 'r') {
-		return -1;
-	}
-
-	int formatLen = strlen(format);
-	char* newFormat = (char*)calloc(formatLen + 3, sizeof(char));
-	sprintf(newFormat, "%s%%n", format);
-
-	int charsRead = 0;
-	int scanRet = sscanf(buf->str[buf->cursor], newFormat, args..., &charsRead);
-	if (scanRet != sizeof...(args)) {
-		return -2;
-	}
-
-	return scanRet;
+	return buf->str[buf->cursor++];
 }
 
 
@@ -297,21 +217,20 @@ int ReadToChar(char* str, buf_t* buf, const char* chars) {
 
 	int strCursor = 0;
 
-	char curCh = buf->str[buf->cursor];
+	char curCh = Bgetc(buf);
 
 	while (!IsOneOfChars(curCh, chars)) {
 
-		if (buf->cursor > buf->size) {
-			buf->cursor = cursorRecover;
+		if (curCh == EOB) {
 			return 1;
 		}
 
 		str[strCursor] = curCh;
-		buf->cursor++;
 		strCursor++;
 
-		curCh = buf->str[buf->cursor];
+		curCh = Bgetc(buf);
 	}
+	buf->cursor--;
 
 	return 0;
 }
@@ -371,6 +290,34 @@ int Btell(buf_t* buf) {
 	return buf->cursor;
 }
 
+
+/*
+*	Увеличивает размер буфера
+*
+*	@param buf Буфер
+*	@param[in] newSize Новый размер
+*
+*	@return 1 - не удалось увеличить; 2 - буфер находится не в режиме записи;
+ 0 - все прошло нормально
+*/
+
+int IncreaseBuf(buf_t* buf, const int newSize) {
+	assert(buf != NULL);
+
+	if (buf->mode != 'w') {
+		return 2;
+	}
+
+	char* newStr = (char*)realloc(buf->str, newSize);
+	if (newStr == NULL) {
+		return 1;
+	}
+	buf->str = newStr;
+	memset(&buf->str[buf->size], 0, newSize - buf->size);
+	buf->size = newSize;
+
+	return 0;
+}
 
 /**
 *	Удаляет буфер. Если он был в режиме чтения, то память со строкой не освобождается!
