@@ -3,6 +3,10 @@
 #define EOB -1   //признак конца буфера
 #define ERR_BUF {NULL, 0, -1, 0}    //буфер - ошибка
 
+#define BSEEK_SET 0
+#define BSEEK_CUR 1
+#define BSEEK_END 2
+
 /**
 *	Буфер (строка с курсором)
 */
@@ -36,3 +40,5 @@ int Bufcat(buf_t* buf, const char* str);
 int IsOneOfChars(const char ch, const char* chars);
 
 int ReadToChar(char* str, buf_t* buf, const char* chars);
+
+int Bseek(buf_t* buf, int offset, int origin);

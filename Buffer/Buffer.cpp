@@ -315,3 +315,43 @@ int ReadToChar(char* str, buf_t* buf, const char* chars) {
 
 	return 0;
 }
+
+
+/**
+*	Устанавливает курсор в буфере в соответствии со значениями offset и origin
+*
+*	@param buf Буфер
+*	@param[in] offset Сдвиг относительно позиции, соответствуйщей origin
+*	@param[in] origin Начальная позиция: BSEEK_SET - начало буфера;\
+ BSEEK_CUR - текущая позиция курсора; BSEEK_END - конец буфера
+*
+*	@return 1 - некорректное значение origin; 2 - курсор выходит за границы буфера;\
+ 0 - все прошло нормально
+*/
+
+int Bseek(buf_t* buf, int offset, int origin) {
+	assert(buf != NULL);
+	
+	int newCursorPos = 0;
+	switch (origin) {
+	case BSEEK_SET:
+		newCursorPos = offset;
+		break;
+	case BSEEK_CUR:
+		newCursorPos = buf->cursor + offset;
+		break;
+	case BSEEK_END:
+		newCursorPos = buf->lastChar + 1 + offset;
+		break;
+	default:
+		return 1;
+	}
+
+	if (newCursorPos<0 || newCursorPos>buf->size) {
+		return 2;
+	}
+
+	buf->cursor = newCursorPos;
+
+	return 0;
+}
