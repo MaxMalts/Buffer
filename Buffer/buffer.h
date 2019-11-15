@@ -42,3 +42,5 @@ int IsOneOfChars(const char ch, const char* chars);
 int ReadToChar(char* str, buf_t* buf, const char* chars);
 
 int Bseek(buf_t* buf, int offset, int origin);
+
+int Btell(buf_t* buf);

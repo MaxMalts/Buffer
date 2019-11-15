@@ -355,3 +355,18 @@ int Bseek(buf_t* buf, int offset, int origin) {
 
 	return 0;
 }
+
+
+/**
+*	Возвращает текущее положение курсора в буфере
+*
+*	@param[in] buf Буфер
+*
+*	@return Текущее положение курсора в буфере
+*/
+
+int Btell(buf_t* buf) {
+	assert(buf != NULL);
+
+	return buf->cursor;
+}
