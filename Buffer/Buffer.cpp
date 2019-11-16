@@ -121,6 +121,27 @@ int Bputc(buf_t* buf, const char ch) {
 
 
 /**
+*	Проверяет, достигнут ли конец буфера
+*
+*	@param[in] buf Буфер
+*
+*	@return 1 (true) - достигнут; 0 (false) - не достигнут
+*/
+
+int Beob(buf_t* buf) {
+	assert(buf != NULL);
+
+	if (buf->mode != 'r') {
+		return 0;
+	}
+
+	if (buf->cursor >= buf->size) {
+		return 1;
+	}
+	return 0;
+}
+
+/**
 *	Читает символ из буфера
 *
 *	@param[in] buf Буфер

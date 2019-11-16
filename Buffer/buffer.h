@@ -29,6 +29,8 @@ buf_t BufConstructor(const char mode, char* str, const int strSize, int* err = N
 
 buf_t BufConstructor(const char mode, int* err = NULL);
 
+int Beob(buf_t* buf);
+
 int Bputc(buf_t* buf, const char ch);
 
 char Bgetc(buf_t* buf);
