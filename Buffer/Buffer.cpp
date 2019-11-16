@@ -149,7 +149,8 @@ char Bgetc(buf_t* buf) {
 *	@param buf
 *	@param[in] str
 *
-*	@return 1 - буфер не в режиме записи; 2 - проблема при дописывании; 0 - все прошло нормально
+*	@return 1 - буфер не в режиме записи; \
+ 2 - проблема при увеличении буфера; 0 - все прошло нормально
 */
 
 int Bufcat(buf_t* buf, const char* str) {
@@ -160,15 +161,16 @@ int Bufcat(buf_t* buf, const char* str) {
 		return 1;
 	}
 
-	int SLen = sprintf(&buf->str[buf->cursor], "%s", str);
-
-	if (SLen < 0) {
-		return 2;
+	int SLen = strlen(str);
+	if (SLen + buf->cursor >= buf->size) {
+		if (IncreaseBuf(buf, (buf->size + SLen) * 2) != 0) {
+			return 2;
+		}
 	}
 
+	strcpy(&buf->str[buf->cursor], str);
+
 	buf->cursor += SLen;
-	buf->size += SLen;
-	buf->str[buf->cursor] = '\0';
 
 	return 0;
 }
