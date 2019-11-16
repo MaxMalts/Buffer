@@ -172,6 +172,8 @@ int Bufcat(buf_t* buf, const char* str) {
 
 	buf->cursor += SLen;
 
+	RecalcLastChar(buf);
+
 	return 0;
 }
 
