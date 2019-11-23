@@ -114,6 +114,7 @@ int Bputc(buf_t* buf, const char ch) {
 		if (realloc(buf->str, buf->size * 2) == NULL) {
 			return 2;
 		}
+		buf->size = buf->size * 2;
 	}
 
 	buf->str[buf->cursor++] = ch;
