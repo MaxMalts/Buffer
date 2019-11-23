@@ -50,7 +50,9 @@ buf_t BufConstructor(const char mode, char* str, const int strSize, int* err) {
 	buf.mode = 'r';
 	buf.lastChar = strSize - 1;
 	
-	*err = 0;
+	if (err != NULL) {
+		*err = 0;
+	}
 	return buf;
 }
 
@@ -84,6 +86,9 @@ buf_t BufConstructor(const char mode, int* err) {
 	buf.mode = 'w';
 	buf.lastChar = 0;
 
+	if (err != NULL) {
+		*err = 0;
+	}
 	return buf;
 }
 
